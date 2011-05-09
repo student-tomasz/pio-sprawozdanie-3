@@ -45,6 +45,71 @@
 
 \section{Diagram klas}
 
+Diagram klas znajduje się na stronie \pageref{fig:diagram_klas}. Zależności
+między klasami są stosunkowo nieskomplikowane i~pozwalają na łatwą rozbudowę
+systemu.
+
+\subsection{Użytkownicy}
+
+Główne klasy reprezentujące użytkowników systemu to \s{Client} i~\s{Employee}.
+
+\subsubsection{Autentykacja}
+
+Klasy te dziedziczą po \s{User}, która jest abstrakcyjna i~zawiera logikę
+odpowiedzialną na autentykację użytkowników lub pracowników. 
+
+\subsubsection{Autoryzacja}
+
+Dodatkowo, posiada one referencję do obiektu klasy \s{Authorization}
+określające uprawnienia użytkownika. Logika autoryzacji jest dosyć prymitywna.
+Składa się na nią typ wyliczeniowy z~akcjami możliwymi do wykonania w~systemie.
+Metodą \f{can()} zwraca wartość \f{true} gdy dana instancja \s{User} ma prawo
+wykonać podaną jej akcję.
+
+Minusem takiego rozwiązania jest konieczność pamiętania przez programistę do
+wywoływania tej metody kiedy zachodzi taka potrzeba. Rozwiązaniem byłoby
+wykorzystanie wzorca \s{Proxy}. \s{User} odwołując się do \s{Auction} albo
+\s{Item} przechodziłby przez pośrednika, który w~zależności od wartości
+zwróconej przez metodę \f{can()} odrzucałby prośbę, albo przekazywał ją dalej.
+
+\subsubsection{Administrator}
+
+Klasa \s{Administrator} jest wyspecjalizowanym pracownikiem, który pomija
+proces autoryzacji tzn. może dokonać wszelkich zmian. Odpowiednik \f{root}.
+Posiada również metody zarządzające całym systemem, np. włączenie trybu
+konserwacji.
+
+\subsection{Przedmioty}
+
+Reprezentacją przedmiotów jest klasa \s{Item}. Posiada jednego właściciela i~co
+najmniej jednego nadzorcę. Przedmiot obsługiwany jest różnie w~zależności czy
+został właśnie dostarczony do domu aukcyjnego, czy jest wystawiony na aukcji
+czy może został już sprzedany. Dlatego klasa \s{Item} jest zaimplementowana
+według wzorca \s{State}. Pozwala to na dynamiczną zmianę zachowania przedmiotu
+w~zależności od akcji podjętych przez użytkowników.
+
+\subsection{Aukcje}
+
+Klasa \s{Auction} jest centralnym punktem systemu. Poza standardowymi
+odniesieniami do klientów związanych z~nią w~różnych rolach, zawiera również
+informacje o~płatnościach i~wysyłce przedmiotu.
+
+Klasy odpowiadające za obsługę płatności i~wysyłki są zaimplementowane według
+wzorca \s{Strategy}. Wygodny sposób na obsługę wielu różnych algorytmów. Każdy
+rodzaj płatności lub wysyłki ma identyczny interfejs, jednak ich implementacje
+są różne. Ułatwia to również dodawanie nowych sposobów płatności~--- wystarczy
+stworzyć tylko nową klasę z~interfejsem \textit{\s{PaymentMethod}}.
+
+\begin{figure}[p]
+  \begin{adjustwidth}{-3cm}{-3cm}
+    \centering
+    \includegraphics{figury/diagram-klas}
+    \caption{Schemat klas.}
+    \label{fig:diagram_klas}
+  \end{adjustwidth}
+\end{figure}
+
+\newpage
 \section{Logiczny model danych}
 
 Schemat danych znajduje się na rys.~\ref{fig:model_danych} na
