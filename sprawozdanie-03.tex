@@ -3,16 +3,17 @@
 
 \usepackage{polski}
 \usepackage{xltxtra}
-
-\usepackage{fancyvrb}
+\usepackage{indentfirst}
 \usepackage{relsize}
+\usepackage{fancyvrb}
 \usepackage[pdfborder={0 0 0}]{hyperref}
-\usepackage{booktabs}
-\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{changepage}
 
 %% tweak fonts
 \defaultfontfeatures{Mapping=tex-text}
 \setromanfont{Charis SIL}
+\setsansfont[Scale=MatchLowercase]{Helvetica Neue}
 \setmonofont[Scale=MatchLowercase]{Menlo}
 \linespread{1.25}
 
@@ -20,6 +21,9 @@
 \DefineVerbatimEnvironment%
   {SmallVerbatim}%
   {Verbatim}{fontsize=\relsize{-0.5},numbers=left,numbersep=-10pt,frame=lines,tabsize=4}
+
+\newcommand{\f}[1]{\texttt{#1}}
+\newcommand{\s}[1]{\textsf{#1}}
 
 \begin{document}
 
@@ -42,6 +46,56 @@
 \section{Diagram klas}
 
 \section{Logiczny model danych}
+
+Schemat danych znajduje się na rys.~\ref{fig:model_danych} na
+str.~\pageref{fig:model_danych}. Modele zawierają tylko najistotniejsze
+elementy z~punktu funkcjonowania systemu.
+
+\subsection{Użytkownicy systemu}
+
+\noindent Najważniejszymi tabelami są \s{Clients} i~\s{Employees}. Każda z~nich
+zawiera informacje:
+
+\begin{itemize}
+  \item osobiste~--- tabela \s{PersonalData},
+  \item potrzebne do zalogowania się do systemu~--- tabela
+    \s{AuthenticationData},
+  \item pracownicy dodatkowo informację o~poziomie uprawnień~--- tabela
+    \s{AuthorizationData}.
+\end{itemize}
+
+Informacje te zostały wydzielone by uniknąć powtarzania kolumn w~tabelach
+użytkowników i~pracowników. Dodatkowo ułatwia to rozwijanie systemu
+w~przyszłości, np. przystosowanie systemu do korzystania z protokołu OAuth.
+
+Tabela \s{AuthorizationLevels} jest tabelą stałą, zapełnioną możliwymi
+poziomami uprawnień przewidzianymi przez system.
+
+\subsection{Aukcje}
+
+Model aukcji jest bardziej skomplikowany, posiada zależności do wielu elementów
+systemu. Tabela \s{Auctions} posiada odniesienia do klienta, który wystawił
+przedmiot, oraz który ewentualnie kupił przedmiot. Pamięta historię licytowania
+pośrednio przez tabelę \s{Bids}. Posiada też informację o~pracownikach je
+nadzorujących oraz o~wystawionym przedmiocie.
+
+Przedmiot (tabela \s{Items}) pamięta, w~których aukcjach przedmiot brał udział
+jeśli nie został sprzedany wcześniej. Koniecznie posiada referencję do
+właściciela i~co najmniej jednego opiekuna.
+
+Kolumny tabeli z~informacjami o~płatnościach i~wysyłce są uzależnione od
+zewnętrznych systemów fiskalnych i~spedycyjnych wykorzystywanych przez dom
+aukcyjny. Muszą na pewno zawierać odniesienie do aukcji, której dotyczą,
+a~pośrednio przez nią informacje o~klientach i~przedmiocie aukcji.
+
+\begin{figure}[p]
+  \begin{adjustwidth}{-2cm}{-2cm}
+    \centering
+    \includegraphics{figury/model-danych}
+    \caption{Schemat modelu danych.}
+    \label{fig:model_danych}
+  \end{adjustwidth}
+\end{figure}
 
 \section{Diagramy aktywności}
 
